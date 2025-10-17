@@ -1,9 +1,8 @@
 <article class="identity-card">
-    <?php 
-    if (has_custom_logo()) 
-        {
-            the_custom_logo();
-        }
+    <?php
+    if (has_custom_logo()) {
+        the_custom_logo();
+    }
     ?>
     <h1><?= get_bloginfo('name') ?></h1>
     <h2><?= get_bloginfo('description') ?></h2>
