@@ -1,0 +1,16 @@
+/*
+Theme Name: ESGI-theme
+Theme URI: https://esgi.fr/themeWP
+Author: Edouard
+Author URI: https://edouard.com
+Description: Thème minimaliste WordPress à but pédagogique pour ESGI 2024-2025.
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: ESGI
+Tags: custom-theme, esgi, wordpress, minimalist
+*/
+
+body {
+  background-color: lightgray;
+}
