@@ -8,6 +8,9 @@ function esgi_after_setup_theme()
 
     // Support pour un logo custom
     add_theme_support('custom-logo');
+
+    // Support pour les images à la une (thumbnails)
+    add_theme_support('post-thumbnails');
 }
 
 // ajout des assets css et js dans les pages de front
@@ -15,6 +18,88 @@ add_action('wp_enqueue_scripts', 'esgi_enqueue_assets', 1000);
 function esgi_enqueue_assets()
 {
     wp_enqueue_style('main', get_stylesheet_uri());
+}
+
+// Modification du filter the_title
+add_filter('the_title', 'esgi_the_title');
+function esgi_the_title($title)
+{
+    $title = strtoupper($title);
+    return $title;
+}
+
+// Customizer du theme
+add_action('customize_register', 'esgi_customize_register');
+
+function esgi_customize_register($wp_customize)
+{
+
+    // ajouter une section
+    $wp_customize->add_section('esgi_section', [
+        'title' => __('Réglages ESGI', 'ESGI'),
+        'description' => __('Faites-vous plaisir !!'),
+        'priority' => 1,
+        'capability' => 'edit_theme_options',
+    ]);
+
+    // ajouter un setting (theme_mod)
+    $wp_customize->add_setting('mainColor', [
+        'type' => 'theme_mod', // or 'option'
+        'capability' => 'edit_theme_options',
+        'theme_supports' => '', // Rarely needed.
+        'default' => '#3f51b5',
+        'transport' => 'refresh', // or postMessage
+        'sanitize_callback' => 'sanitize_hex_color',
+        'sanitize_js_callback' => '', // Basically to_json.
+    ]);
+
+    // ajouter un control (color picker)
+    $wp_customize->add_control(new WP_Customize_Color_Control($wp_customize, 'mainColor', [
+        'label' => __('Couleur principale', 'ESGI'),
+        'section' => 'esgi_section',
+    ]));
+
+    // ajout d'un setting isDark (bool)
+    $wp_customize->add_setting('isDark', [
+        'type' => 'theme_mod', // or 'option'
+        'capability' => 'edit_theme_options',
+        'theme_supports' => '', // Rarely needed.
+        'default' => false,
+        'transport' => 'refresh', // or postMessage
+        'sanitize_callback' => 'sanitize_bool',
+        'sanitize_js_callback' => '', // Basically to_json.
+    ]);
+
+    // ajout d'un control (checkbox)
+    $wp_customize->add_control('isDark', [
+        'type' => 'checkbox',
+        'section' => 'esgi_section',
+        'label' => __('Mode sombre', 'ESGI'),
+        'description' => __('Black is beautiful :)'),
+    ]);
+}
+
+function sanitize_bool($data)
+{
+    return is_bool($data) ? $data : false;
+}
+
+
+// Application du theme_mod main-color (ajout d'une balise style dans le head des pages, on y redéfinit --main-color)
+add_action('wp_head', 'esgi_wp_head', 100);
+function esgi_wp_head()
+{
+    echo '<style> :root{ --main-color: ' . get_theme_mod('mainColor') . ';} </style>';
+}
+
+// Application du theme_mod isDark (ajouter la classe .dark au body via le filtre body_class)
+add_filter('body_class', 'esgi_body_class');
+function esgi_body_class($classes)
+{
+    if (get_theme_mod('isDark')) {
+        $classes[] = 'dark';
+    }
+    return $classes;
 }
 
 // fonction helper de génération de markup svg
